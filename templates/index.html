@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Findr</title>
+    <style>
+        /* Center text horizontally and vertically */
+        body {
+            background-color: #454545;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            margin-top: 5%;
+        }
+
+        .form-container {
+            text-align: center;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-container select {
+            width: 100%;
+            padding: 5px;
+        }
+
+        .form-container input[type="submit"] {
+            display: block;
+            margin: 10px auto;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .result-container img {
+            width: 50px; /* Set the desired width for the images */
+            margin: 10px;
+        }
+
+        /* Define a CSS class for the image-container */
+        .image-container {
+            text-align: center; /* Center-align the content */
+        }
+
+        .movie-image {
+            width: 200px; /* Set the desired width for the images */
+            height: auto; /* Automatically adjust the height while maintaining the aspect ratio */
+            margin: 10px;
+        }
+
+        /* Define a CSS class for the movie-text */
+        .movie-text {
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>Movie Findr</h1>
+    
+    <div class="form-container">
+        <form id="myForm">
+            <label for="option">Type or select a movie from the dropdown</label>
+            <select id="option" name="option">
+                {% for option in options %}
+                    <option value="{{ option }}">{{ option }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Show Recommendation">
+        </form>
+    </div>
+
+    <div id="result1"></div> 
+    
+    <script>
+        document.getElementById('myForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const selectedOption = document.getElementById('option').value;
+
+            fetch(`/process_option?selected_option=${selectedOption}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result1').innerText = data.list1.join(' ');
+                    displayImages(data.list2, 'result1')
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+        function displayImages(imageUrls, resultElementId) {
+            const resultElement = document.getElementById(resultElementId);
+            resultElement.innerHTML = ''; // Clear any previous content
+
+            imageUrls.forEach(imageUrl => {
+                const imgElement = document.createElement('img');
+                imgElement.src = imageUrl;
+                imgElement.classList.add('movie-image');
+                resultElement.appendChild(imgElement);
+            });
+        }
+
+    </script>
+
+</body>
+</html>
